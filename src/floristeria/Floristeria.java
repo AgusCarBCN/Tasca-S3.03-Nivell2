@@ -36,11 +36,12 @@ public class Floristeria {
 			Console.writeln("*****Menu principal*****");
 			Console.writeln("0.salir de la aplicacion.");
 			Console.writeln("1.Añadir productos al stock.");
-			Console.writeln("2.Retirar para venta productos.");
-			Console.writeln("3.Retirar producto de la tienda.");
-			Console.writeln("4.Stock de productos.");
-			Console.writeln("5.Modificar precios.");
-			Console.writeln("6.Mostrar ventas.");
+			Console.writeln("2.Añadir flor a stock.");
+			Console.writeln("3.Retirar para venta productos.");
+			Console.writeln("4.Retirar producto de la tienda.");			
+			Console.writeln("5.Stock de productos.");
+			Console.writeln("6.Modificar precios.");
+			Console.writeln("7.Mostrar ventas.");
 			opcion = Console.readInt("Introduce una opcion: ");
 			switch (opcion) {
 			case 0:
@@ -51,18 +52,21 @@ public class Floristeria {
 				añadirProducto();
 				break;
 			case 2:
+				añadirFlorTienda();
+				break;			
+			case 3:
 				retirarProducto();
 				break;
-			case 3:
+			case 4:
 				retirarProductoTienda();
 				break;
-			case 4:
-				mostrarStock();
-				break;
 			case 5:
+				mostrarStock();
+				break;				
+			case 6:
 				modificarPrecios();
 				break;
-			case 6:
+			case 7:
 				mostrarVentas();
 				break;
 			default:
@@ -199,6 +203,40 @@ public class Floristeria {
 		sentencia.execute();
 	}
 
+	public static void añadirFlorTienda() throws SQLException {
+		String sql="SELECT idProducto FROM Stock ORDER BY idProducto DESC LIMIT 1";	
+		String sql1="SELECT idFlores FROM Flores ORDER BY idFlores DESC LIMIT 1";
+		String sql2="INSERT INTO Flores (color) VALUES (?)";
+		String sql3="INSERT INTO Stock (idProducto,cantidad,descripcion,precio,idFlores,fueraCatalogo) VALUES(?,?,?,?,?,0)";
+		String color;
+		double precio;
+		int cantidad;
+		int id,idFlores;
+		color=Console.read("Color de la flor: ");
+		color="Flor "+color;
+		precio=Console.readDouble("Precio de la flor: ");
+		cantidad=Console.readInt("Cantidad de producto: ");			
+		Statement sentencia=conexion.createStatement();
+		ResultSet rs=sentencia.executeQuery(sql);
+		rs.next();
+		id=rs.getInt(1);
+		id++;
+		Statement sentencia1=conexion.createStatement();
+		ResultSet rs1=sentencia1.executeQuery(sql1);
+		rs1.next();
+		idFlores=rs1.getInt(1);
+		PreparedStatement sentencia2 = conexion.prepareStatement(sql2);
+		sentencia2.setString(1, color);
+		sentencia2.execute();
+		PreparedStatement sentencia3=conexion.prepareStatement(sql3);
+		sentencia3.setInt(1, id);
+		sentencia3.setInt(2,cantidad);
+		sentencia3.setString(3,color);
+		sentencia3.setDouble(4,precio);
+		sentencia3.setInt(5, idFlores);
+		sentencia3.execute();
+		
+	}
 	/**
 	 * Método que muestra stock total de los productos detallado,con el valor total
 	 * del stock.
@@ -263,6 +301,8 @@ public class Floristeria {
 		return totalVentas;
 
 	}
+	
+	
 
 	/**
 	 * 
