@@ -15,7 +15,7 @@ public class Floristeria {
 
 	public static void main(String[] args) {
 		try {
-			conexion = DriverManager.getConnection("jdbc:mysql://localhost:3306/floristeria", "root", "nina1971");
+			conexion = DriverManager.getConnection("jdbc:mysql://localhost:3306/floristeria", "root", "");
 			menuPrincipal();
 			conexion.close();
 		} catch (SQLException e) {
