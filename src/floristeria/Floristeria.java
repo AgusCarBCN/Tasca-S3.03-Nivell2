@@ -15,22 +15,20 @@ public class Floristeria {
 
 	public static void main(String[] args) {
 		try {
-
 			conexion = DriverManager.getConnection("jdbc:mysql://localhost:3306/floristeria", "root", "nina1971");
 			menuPrincipal();
 			conexion.close();
 		} catch (SQLException e) {
-
 			e.printStackTrace();
 		}
-
 	}
-/**
- * 
- * Método que abre menú principal.
- * 
- * @throws SQLException
- */
+
+	/**
+	 * 
+	 * Método que abre menú principal.
+	 * 
+	 * @throws SQLException
+	 */
 	public static void menuPrincipal() throws SQLException {
 		byte opcion;
 		boolean exit = false;
@@ -38,12 +36,11 @@ public class Floristeria {
 			Console.writeln("*****Menu principal*****");
 			Console.writeln("0.salir de la aplicacion.");
 			Console.writeln("1.Añadir productos al stock.");
-			Console.writeln("2.Añadir nueva flor.");
-			Console.writeln("3.Retirar para venta productos.");
-			Console.writeln("4.Retirar producto de la tienda.");
-			Console.writeln("5.Stock de productos.");
-			Console.writeln("6.Modificar precios.");
-			Console.writeln("7.Mostrar ventas.");
+			Console.writeln("2.Retirar para venta productos.");
+			Console.writeln("3.Retirar producto de la tienda.");
+			Console.writeln("4.Stock de productos.");
+			Console.writeln("5.Modificar precios.");
+			Console.writeln("6.Mostrar ventas.");
 			opcion = Console.readInt("Introduce una opcion: ");
 			switch (opcion) {
 			case 0:
@@ -54,36 +51,34 @@ public class Floristeria {
 				añadirProducto();
 				break;
 			case 2:
-				añadirNuevaFlor();
-				break;
-			case 3:
 				retirarProducto();
 				break;
-			case 4:
+			case 3:
 				retirarProductoTienda();
 				break;
-			case 5:
+			case 4:
 				mostrarStock();
 				break;
-			case 6:
+			case 5:
 				modificarPrecios();
 				break;
-			case 7:
+			case 6:
 				mostrarVentas();
 				break;
 			default:
-				Console.writeError("Debes introducir una opción entre 0 y 5.");
+				Console.writeError("Debes introducir una opción entre 0 y 6.");
 				break;
 			}
 		} while (!exit);
 
 	}
-/**
- * 
- * Método que añade producto a base de datos Floristeria en la tabla stock
- * 
- * @throws SQLException
- */
+
+	/**
+	 * 
+	 * Método que añade producto en stock
+	 * 
+	 * @throws SQLException
+	 */
 	public static void añadirProducto() throws SQLException {
 		boolean exit = false;
 		int nuevaCantidad = 0;
@@ -105,66 +100,25 @@ public class Floristeria {
 			}
 		} while (!exit);
 	}
-	
+
 	/**
 	 * 
-	 * Método que añade una nueva flor a la base de datos.
+	 * Método que retira un producto de la tabla Stock y lo añade a la clase ticket
+	 * 
+	 * @throws SQLException
 	 */
-
-	public static void añadirNuevaFlor() {
-		try {
-			String sql1 = null;
-			String sql2 = null;
-			String sql3 = null;
-			String descripcion = null;
-			String color = null;
-			int cantidad = 0;
-			int id = 0;
-			double precio;
-			sql1 = "INSERT INTO Flores (color) VALUES (?)";
-			sql2 = "SELECT idFlores FROM Flores WHERE color=?";
-			sql3 = "INSERT INTO Stock (cantidad,idFlores,descripcion,precio) VALUES (?,?,?,?)";
-			color = Console.readString("Introduce color: ");
-			descripcion = "Flor " + color;
-			precio = Console.readDouble("Introduce precio del producto: ");
-			cantidad = Console.readInt("Introduce una cantidad de producto a añadir: ");
-			PreparedStatement sentencia1 = conexion.prepareStatement(sql1);
-			sentencia1.setString(1, color);
-			sentencia1.execute();
-			PreparedStatement sentencia2 = conexion.prepareStatement(sql2);
-			sentencia2.setString(1, color);
-			ResultSet rs = sentencia2.executeQuery();
-			rs.next();
-			id = rs.getInt(1);
-			PreparedStatement sentencia3 = conexion.prepareStatement(sql3);
-			sentencia3.setInt(1, cantidad);
-			sentencia3.setInt(2, id);
-			sentencia3.setString(3, descripcion);
-			sentencia3.setDouble(4, precio);
-			sentencia3.execute();
-		} catch (SQLException e) {
-			Console.writeError(
-					"Probablemente has introducido un registro del mismo tipo.No se admiten tipos repetidos");
-		}
-	}
-/**
- * 
- * Método que retira un producto de la tabla Stock y lo añade a la clase ticket
- * 
- * @throws SQLException
- */
 	public static void retirarProducto() throws SQLException {
 
 		boolean exit = false;
 		double importe = 0;
-		double importeParcial=0;
+		double importeParcial = 0;
 		double precio;
 		int cantidadStock = 0;
 		int cantidad = 0;
 		int opcion;
 		int idProducto;
 		int idTicket = 0;
-		
+
 		String sql = "INSERT INTO DetalleTicket(idtickets,idProducto,cantidad,importeparcial,precio) VALUES(?,?,?,?,?)";
 		String sql1 = "INSERT INTO tickets (importe,fecha) VALUES (?,?)";
 		String sql11 = "SELECT idtickets FROM tickets WHERE importe=0";
@@ -172,8 +126,7 @@ public class Floristeria {
 		String sql3 = "UPDATE Stock SET cantidad=cantidad-? WHERE idProducto=?";
 		String sql4 = "SELECT precio FROM Stock WHERE idProducto=?";
 		String sql5 = "UPDATE tickets SET importe=? WHERE idtickets=?";
-		
-		
+
 		opcion = Console.readInt("Crear ticket de venta?:(0 para salir,1 para crear ticket)");
 		if (opcion == 0) {
 			Console.writeln("Has salido sin crear venta");
@@ -210,20 +163,20 @@ public class Floristeria {
 						sentencia4.setInt(1, idProducto);
 						ResultSet rs2 = sentencia4.executeQuery();
 						rs2.next();
-						precio=rs2.getDouble(1);
+						precio = rs2.getDouble(1);
 						importe += rs2.getDouble(1) * cantidad;
-						importeParcial=rs2.getDouble(1)*cantidad;
+						importeParcial = rs2.getDouble(1) * cantidad;
 						Console.writeln("el importe es: " + importe);
 						PreparedStatement sentencia5 = conexion.prepareStatement(sql5);
 						sentencia5.setDouble(1, importe);
 						sentencia5.setInt(2, idTicket);
 						sentencia5.executeUpdate();
-						PreparedStatement sentencia = conexion.prepareStatement(sql);					
+						PreparedStatement sentencia = conexion.prepareStatement(sql);
 						sentencia.setInt(1, idTicket);
 						sentencia.setInt(2, idProducto);
 						sentencia.setInt(3, cantidad);
-						sentencia.setDouble(4,importeParcial);
-						sentencia.setDouble(5,precio);
+						sentencia.setDouble(4, importeParcial);
+						sentencia.setDouble(5, precio);
 						sentencia.executeUpdate();
 					}
 				}
@@ -231,30 +184,30 @@ public class Floristeria {
 
 		}
 	}
-/**
- * Método que retira un producto de la floristeria.
- * 
- * @throws SQLException
- */
-	public static void retirarProductoTienda() throws SQLException {
 
-		int idProducto;		
-		String sql="UPDATE Stock SET fueraCatalogo=1,cantidad=0 WHERE idProducto=?";		
+	/**
+	 * Método que retira un producto de la floristeria.
+	 * 
+	 * @throws SQLException
+	 */
+	public static void retirarProductoTienda() throws SQLException {
+		int idProducto;
+		String sql = "UPDATE Stock SET fueraCatalogo=1,cantidad=0 WHERE idProducto=?";
 		idProducto = Console.readInt("Introduce el id del producto a eliminar: ");
 		PreparedStatement sentencia = conexion.prepareStatement(sql);
 		sentencia.setInt(1, idProducto);
 		sentencia.execute();
-		
-
 	}
-/**
- * Método que muestra stock total de los productos detallado,con el valor total del stock.
- * 
- * 
- * @throws SQLException
- */
+
+	/**
+	 * Método que muestra stock total de los productos detallado,con el valor total
+	 * del stock.
+	 * 
+	 * 
+	 * @throws SQLException
+	 */
 	public static void mostrarStock() throws SQLException {
-		String sql = "SELECT idProducto,cantidad,precio,cantidad*precio,descripcion FROM Stock  WHERE fueraCatalogo=0 ORDER BY Descripcion desc";
+		String sql = "SELECT idProducto,cantidad,precio,cantidad*precio,descripcion FROM Stock  WHERE fueraCatalogo=0 ORDER BY idProducto ";
 		Console.writeln("           Stock de productos");
 		Console.writeln("----------------------------------------------------------");
 		Console.writeln("idProducto Cantidad  Precio    Valor    Descripcion ");
@@ -310,16 +263,14 @@ public class Floristeria {
 		return totalVentas;
 
 	}
-	
+
 	/**
 	 * 
-	 * Método que muestra las ventas realizadas totales	 * 
+	 * Método que muestra las ventas realizadas totales *
 	 * 
 	 * @throws SQLException
 	 */
-
 	public static void mostrarVentas() throws SQLException {
-
 		String sql1 = "SELECT * FROM tickets";
 		boolean exit = false;
 		int idticket;
@@ -358,15 +309,14 @@ public class Floristeria {
 				total = rs2.getDouble(1);
 				String sql3 = "SELECT dt.cantidad,s.descripcion,dt.precio,dt.importeparcial FROM tickets t JOIN DetalleTicket dt ON t.idtickets=dt.idtickets JOIN Stock s ON s.idProducto=dt.idProducto WHERE t.idtickets=?";
 				PreparedStatement sentencia3 = conexion.prepareStatement(sql3);
-				sentencia3.setInt(1, idticket);				
+				sentencia3.setInt(1, idticket);
 				ResultSet rs3 = sentencia3.executeQuery();
 				Console.writeln("               ticket de venta");
 				Console.writeln("-------------------------------------------");
 				Console.writeln("Cantidad   Precio   Importe     Concepto");
-				Console.writeln("-------------------------------------------");				
+				Console.writeln("-------------------------------------------");
 				while (rs3.next()) {
-					
-					System.out.printf("%2s", rs3.getInt(1));					
+					System.out.printf("%2s", rs3.getInt(1));
 					System.out.printf("%13s", rs3.getDouble(3));
 					System.out.printf("%10s", rs3.getDouble(4));
 					System.out.print("    " + rs3.getString(2));
@@ -389,7 +339,7 @@ public class Floristeria {
 		int nuevoPrecio = 0;
 		int idProducto;
 		String sql = "UPDATE Stock SET precio=? WHERE idProducto=?";
-		
+
 		do {
 			Console.writeln("0.Salir del menú añadir.");
 			idProducto = Console.readInt("Introduce el id del producto a modificar precio: ");
